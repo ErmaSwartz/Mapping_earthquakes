@@ -9,5 +9,8 @@ attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap
     accessToken: API_KEY
 });
 
+
+let data = ('https://gbfs.citibikenyc.com/gbfs/en/station_information.json')
+console.log(data)
 // Then we add our 'graymap' tile layer to the map.
 streets.addTo(map);
