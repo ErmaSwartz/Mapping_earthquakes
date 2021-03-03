@@ -3,15 +3,24 @@ let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/t
 attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     accessToken: API_KEY
-});
+  });
 
 // We create the dark view tile layer that will be an option for our map.
 let satelliteStreets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     accessToken: API_KEY
-});
+  });
 
+  // create third map style
+let satelliteStreets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+  attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+  maxZoom: 18,
+  accessToken: API_KEY
+}); 
+
+
+// read earthquake data and create a function
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(data){
  // This function returns the style data for each of the earthquakes we plot on
 // the map. We pass the magnitude of the earthquake into two separate functions
@@ -72,6 +81,10 @@ style: styleInfo,
 }
 }).addTo(earthquakes);
   });
+
+
+
+  // read techtonic plate data 
   // link to geojson data 
   let boundaries = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
@@ -97,6 +110,11 @@ Tectonics: tectonic_plates,
 Major_Quakes: major_quakes
 };
 
+// Then we add a control to the map that will allow the user to change
+// // which layers are visible.
+L.control.layers(baseMaps, overlays).addTo(map); 
+
+
 // Create the map object with center, zoom level and default layer.
 let map = L.map('mapid', {
   center: [39.5, -98.5],
@@ -104,9 +122,6 @@ let map = L.map('mapid', {
   layers: [streets]
 })
 
-// // Then we add a control to the map that will allow the user to change
-// // which layers are visible.
-L.control.layers(baseMaps, overlays).addTo(map); 
 
   // 3. Use d3.json to make a call to get our Tectonic Plate geoJSON data.
   d3.json(boundaries).then(function(data) {
@@ -117,6 +132,10 @@ L.control.layers(baseMaps, overlays).addTo(map);
       ).addTo(tectonic_plates)
 });
 
+
+
+
+// read major quake data 
 // 3. Retrieve the major earthquake GeoJSON data >4.5 mag for the week.
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson").then(function(data) {
 
@@ -168,10 +187,10 @@ style: styleInfo,
 onEachFeature: function(feature, layer) {
 layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
 }
-}).addTo(Major_Quakes);
+}).addTo(major_quakes);
 
-  // });
-
+  // });  
+  major_quakes.addTo(map);
 
   // 9. Close the braces and parentheses for the major earthquake data.
   };
@@ -236,7 +255,7 @@ legend.onAdd = function() {
   };
 
   // Finally, we our legend to the map.
-  legend.addTo(Major_Quakes);
+  legend.addTo(major_quakes);
 
   // // Use d3.json to make a call to get our Tectonic Plate geoJSON data.
   
